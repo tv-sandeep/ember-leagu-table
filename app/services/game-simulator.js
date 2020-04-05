@@ -2,9 +2,16 @@ import Service from '@ember/service';
 import { inject } from '@ember/service'
 import { later } from '@ember/runloop';
 import { shuffle } from 'ember-composable-helpers/helpers/shuffle';
+import { computed } from '@ember/object'
 
 export default Service.extend( {
     store: inject(),
+
+    games: computed(function()
+    {
+        return this.store.peekAll('game')
+
+    }),
 
     init(){
         this._super(...arguments);
@@ -34,6 +41,11 @@ export default Service.extend( {
         let awayGoals = this.randomScore(3);
 
         console.log({homeGoals, awayGoals});
+
+        this.store.createRecord('game', {homeTeam, awayTeam, homeTeam, awayGoals, 
+            playedDate: new Date()});
+
+        later(this, this.simulateGame, 1000);
     },
 
     randomScore(maximumGoals){
